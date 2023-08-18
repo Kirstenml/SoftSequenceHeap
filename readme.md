@@ -1,5 +1,6 @@
 # Exact Sorting Using the Approximate Priority Queue Soft Sequence Heaps
-## Implementations in C++ of the Master's Thesis by Kirsten Köbschall
+Literature: Brodal, Gerth. (2021). Soft Sequence Heaps. 10.1137/1.9781611976496.2. 
+## Implementation in C++ by Kirsten Köbschall
 
 This project is structured as follows:
 
