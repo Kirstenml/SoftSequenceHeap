@@ -9,7 +9,7 @@
 #define SOFTSEQUENCEHEAP_CHAZELLE_SORTING_H
 
 #include "../soft_sequence_heap.h"
-#include "../sorting_algorithms/timsort.h"
+#include "../../sorting_algorithms/timsort.h"
 #include <numeric>  //accumulate
 
 extern unsigned long long num_comparisons_chazelle_sorting;

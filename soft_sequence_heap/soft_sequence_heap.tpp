@@ -58,7 +58,6 @@ head<T> *update_suffix_min(head<T> *h) {
     // walk backwards through head-list
     while (true) {
         if (h->sequence.front().key < tmp_min->sequence.front().key) { tmp_min = h; }
-        ++num_comparisons;
         h->suffix_min = tmp_min;
         if (h->prev == nullptr) { break; }
         h = h->prev;
@@ -77,7 +76,6 @@ void update_suffix_min_once(head<T> *h) {
     } else {
         h->suffix_min = h;
     }
-    ++num_comparisons;
 }
 
 // replace the first two heads of head-list (first_head and snd_head) with replace_head
@@ -143,7 +141,7 @@ tuple_find_min<T>* find_min(soft_sequence_heap<T> *s) {
 
 // delete lazily be value (more expensive than deleting by pointer)
 template<typename T>
-circular_linked_list<T> *delete_item(soft_sequence_heap<T> *s, T item) {
+std::list<T> *delete_item(soft_sequence_heap<T> *s, T item) {
     if (empty(s)) { throw "Soft Sequence Heap is empty"; }
     tuple_find_min<T>* findMin = find_min(s);
     T min_node = findMin->real_key;
@@ -152,7 +150,7 @@ circular_linked_list<T> *delete_item(soft_sequence_heap<T> *s, T item) {
         return nullptr;
     }
     delete findMin;
-    return extract_min(s).corruption_set;
+    return extract_min(s).getCorruptionSet();
 }
 
 template<typename T>
@@ -439,10 +437,14 @@ std::ostream& operator<<(std::ostream &out, soft_sequence_heap<T> const& softHea
 
 template<typename T>
 std::ostream& operator<<(std::ostream &out, triple_extract_min<T> const& tripleExtractMin) {
-    if (tripleExtractMin.corruption_set->empty()) { return out; }
+    if (tripleExtractMin.corruption_set.empty()) { return out; }
     out << "minimum value (maybe corrupted) = " << tripleExtractMin.real_key << std::endl;
     out << "minimum current_key = " << tripleExtractMin.current_key << std::endl;
-    out << "corrupted items = " << *(tripleExtractMin.corruption_set) << std::endl;
+    out << "corrupted items = { ";
+    for (const auto &item : tripleExtractMin.corruption_set) {
+        out << item << " ";
+    }
+    out << "}" << std::endl;
     return out;
 }
 

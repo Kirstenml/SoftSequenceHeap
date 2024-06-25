@@ -2,9 +2,3 @@
 .idea
 cmake-build-debug
 cmake-build-release
-heapsort.cpp
-heapsort.h
-random_permutations_large.txt
-partially_sorted_large.txt
-sorting_algorithms
-raw_data

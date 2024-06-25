@@ -9,7 +9,6 @@
 #include "head.h"
 #include "node.h"
 
-extern unsigned long long num_comparisons;
 
 
 // Merge two heads h1 and h2 into a new head h_merged using a simple variant of binary merging
@@ -30,7 +29,6 @@ void binary_merge(head<T> *h1, head<T> *h2, head<T> *h_merged) {
             result.push_back(*it_1);
             ++it_1;
         }
-        ++num_comparisons;
     }
     // if one soft sequence is not empty append remaining nodes to h
     if (it_1 != h1->sequence.end()) {

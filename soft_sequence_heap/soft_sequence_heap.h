@@ -26,6 +26,7 @@ struct triple_extract_min {
     std::list<T> corruption_set;
     triple_extract_min(T minVal, T key, const std::list<T> &corruptionSet) : real_key(minVal), current_key(key),
                                                                              corruption_set(corruptionSet) {}
+    std::list<T>* getCorruptionSet() { return &corruption_set; }
 };
 
 // to return multiple arguments in extract min for Sorting by Witnesses
@@ -92,7 +93,7 @@ void insert(soft_sequence_heap<T> *s, const std::vector<T> &values);
 template<typename T>
 tuple_find_min<T>* find_min(soft_sequence_heap<T> *s);
 template<typename T>
-circular_linked_list<T> *delete_item(soft_sequence_heap<T> *s, T item);
+std::list<T> *delete_item(soft_sequence_heap<T> *s, T item);
 template<typename T>
 head<T> *remove_head(soft_sequence_heap<T> *s, head<T> *h);
 template<typename T>

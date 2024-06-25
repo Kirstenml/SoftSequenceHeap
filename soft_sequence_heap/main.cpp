@@ -1,83 +1,44 @@
 #include <iostream>
 #include "soft_sequence_heap.h"
 #include <vector>
-#include "data/generate_data.h"
-#include "data/read_data.h"
-#include "benchmarks.h"
+#include "sorting/sorting_by_witnesses.h"
+#include "build_ssh/build_ssh_parallel.h"
+
 
 int main() {
-/* order_permutations = 0: sorted
- *                    = 1: partially sorted
- *                    = 2: random
-*/
-    int order_permutations = 2;
-    bool large = true;
+    float eps = 0.8;
+    soft_sequence_heap<int> *softSequenceHeap = make_heap<int>(eps);
 
-    /////// GENERATE DATA
-//    generate_data(order_permutations, large, 30);
-//    return 0;
+    std::vector<int> numbers{13, 5, 30, 20, 50, 14, 26, 33, 21, 4, 17, 44, 23, 9, 11};
+    insert(softSequenceHeap, numbers);
+    std::cout << *softSequenceHeap << std::endl;
+    // Extract approximate minimum
+    std::cout << extract_min(softSequenceHeap) << std::endl;
+    // Delete an item
+    delete_item(softSequenceHeap, 26);
+    std::cout << *softSequenceHeap << std::endl;
+    // Extract all items
+    extract_all(softSequenceHeap);
 
-    /////// TIME MEASUREMENTS FOR BUILDING A SOFT SEQUENCE HEAP WITH LARGE DATA
+    // Meld two soft sequence heaps
+    soft_sequence_heap<int> *softSequenceHeap2 = make_heap<int>(eps);
+    std::vector<int> numbers2{1, 2, 6, 7, 23, 7, 18, 16, 70, 66, 3};
+    insert(softSequenceHeap2, numbers2);
+    soft_sequence_heap<int> *s = meld(softSequenceHeap, softSequenceHeap2);
+    std::cout << *s << std::endl;
 
-    write_benchmarks(2);
-    write_benchmarks(1);
+    // Fast approach to create a soft sequence heap
+    std::vector<int> insert_vector{13, 5, 30, 20, 50, 14, 26, 33, 21, 4, 17, 44, 23, 9};
+    size_t chunk_size = 2;
+    bool dynamic_cs = false;
+    soft_sequence_heap<int> *sMelded = insert_meld_ssh(insert_vector, eps, chunk_size, dynamic_cs);
+    std::cout << *sMelded << std::endl;
 
-
-    /////// TEST SOFT SEQUENCE HEAP
-//    float eps = 0.8;
-//    soft_sequence_heap<int> *softHeap = make_heap<int>(eps);
-//    soft_sequence_heap<int> *softHeap2 = make_heap<int>(eps);
-//
-//    std::vector<int> numbers{13, 5, 30, 20, 50, 14, 26, 33, 21, 4, 17, 44, 23, 9, 11};
-//    std::vector<int> numbers2{1, 2, 6, 7, 23, 7, 18, 16, 70, 66, 3};
-//    insert(softHeap, numbers);
-//    insert(softHeap2, numbers2);
-//
-//    std::cout << *softHeap << std::endl;
-//    std::cout << *softHeap2 << std::endl;
-//
-//    /////// meld
-//    soft_sequence_heap<int> *s = meld(softHeap, softHeap2);
-//    std::cout << *s << std::endl;
-//    extract_all(s);
-
-    /////// extract_min
-//    std::cout << extract_min(s) << std::endl;
-//    std::cout << extract_min(s) << std::endl;
-//    std::cout << extract_min(s) << std::endl;
+    // Our contribution: Sorting by witnesses
+    std::vector<int> values_res = *extracting_interval_sorting(sMelded, eps, insert_vector.size());
+    for (int i: values_res)
+        std::cout << i << ' ';
 
 
-    /////// delete
-//    delete_item(s, 26);
-//    std::cout << *s << std::endl;
-//
-//    int n = numbers.size() + numbers2.size();
-//    std::vector<int> result(n);
-//    for (int i = 0; i < n; ++i) {
-//        triple_extract_min<int> extract_s = extract_min(s);
-//        std::cout << extract_s << std::endl;
-//        result[i] = extract_s.real_key;
-//    }
-//    for (int i = 0; i < n; ++i) {
-//        std::cout << result[i] << ", ";
-//    }
-
-    /////// EXAMPLE FROM MASTER'S THESIS
-//    soft_sequence_heap<int> *softHeap_example = make_heap<int>(eps);
-//    insert(softHeap_example, numbers);
-//
-//    extract_min(softHeap_example);
-//    extract_min(softHeap_example);
-//    std::cout << std::endl;
-//    std::cout << *softHeap_example << std::endl;
-//    std::cout << "insert 19: " << std::endl;
-//    std::cout << std::endl;
-//    insert(softHeap_example, 19);
-//    std::cout << *softHeap_example << std::endl;
-//    std::vector<int> *res = extract_all(softHeap_example);
-//    for (int val : *res) {
-//        std::cout << val << ", ";
-//    }
-//    delete res;
     return 0;
 }

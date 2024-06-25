@@ -12,10 +12,8 @@
 #include <algorithm>
 #include <map>
 #include "../soft_sequence_heap.h"
-#include "../../sorting_algorithms/timsort.h"
 #include <numeric>  //accumulate
 
-extern unsigned long long num_comparisons_interval_sorting;
 bool sort_by_first(const std::pair<size_t, size_t>& a, const std::pair<size_t, size_t>& b);
 void remove_intervals(std::vector<std::pair<size_t, size_t>> &intervals);
 
@@ -40,11 +38,7 @@ tuple_extract_partially<T> *presorted_intervals(soft_sequence_heap<T> *s, float 
 
     while (!empty(s)) {  // extract all
         {
-            //num_comparisons = 0;    // to add only the comparisons for extracting
             triple_extract_min_sorting<T> extracted = extract_min_sbw(s);
-            // in the first round we add all number of comparisons for building the soft sequence heap
-            num_comparisons_interval_sorting += num_comparisons;
-            num_comparisons = 0;
 
             // store the currently corrupted items with their index in the sorted list to determine an interval
             if (!extracted.corruption_set.empty()) {
@@ -75,12 +69,10 @@ template<typename T>
 void sort_selected_intervals(tuple_extract_partially<T> *t_extract) {
     // at the moment it is not possible to parallelize the sorting, because the intervals still overlap.
     for (int i = 0; i < t_extract->intervals.size(); ++i) {
-        TimSort::timSort(&(t_extract->values[t_extract->intervals[i].first]),
-                      t_extract->intervals[i].second - t_extract->intervals[i].first);
-//        std::sort(t_extract->values.begin() + t_extract->intervals[i].first,
-//                  t_extract->values.begin() + ( t_extract->intervals[i].second - t_extract->intervals[i].first ));
-        num_comparisons_interval_sorting += num_comparison_timsort;
-        num_comparison_timsort = 0;
+        // TimSort::timSort(&(t_extract->values[t_extract->intervals[i].first]),
+        //               t_extract->intervals[i].second - t_extract->intervals[i].first);
+        std::sort(t_extract->values.begin() + t_extract->intervals[i].first,
+                  t_extract->values.begin() + ( t_extract->intervals[i].second - t_extract->intervals[i].first ));
     }
 }
 
@@ -103,12 +95,10 @@ void sort_selected_intervals_parallel(tuple_extract_partially<T> *t_extract) {
     #pragma omp parallel for
     for (int i = 0; i < distinct_intervals.size(); ++i) {
         // we use Timsort to get the number of comparisons
-//        std::sort(t_extract->values.begin() + distinct_intervals[i].first,
-//                  t_extract->values.begin() + ( distinct_intervals[i].second - distinct_intervals[i].first ));
-        TimSort::timSort(&(t_extract->values[distinct_intervals[i].first]),
-                      distinct_intervals[i].second - distinct_intervals[i].first);
-        num_comparisons_interval_sorting += num_comparison_timsort;
-        num_comparison_timsort = 0;
+        std::sort(t_extract->values.begin() + distinct_intervals[i].first,
+                  t_extract->values.begin() + ( distinct_intervals[i].second - distinct_intervals[i].first ));
+        // TimSort::timSort(&(t_extract->values[distinct_intervals[i].first]),
+        //               distinct_intervals[i].second - distinct_intervals[i].first);
     }
     t_extract->intervals = remaining_intervals;
     sort_selected_intervals_parallel(t_extract);
@@ -166,5 +156,7 @@ std::ostream& operator<<(std::ostream &out, tuple_extract_partially<T> const& tu
     out << "\n";
     return out;
 }
+
+#include "sorting_by_witnesses.cpp"
 
 #endif //SOFTSEQUENCEHEAP_SORTING_BY_WITNESSES_H
