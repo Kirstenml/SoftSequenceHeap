@@ -4,7 +4,7 @@
 This project contains an implementation in C++ of soft sequence heaps (SSH) introduced by G. Brodal (2021). 
 Based on SSH we introduce a new sorting algorithm *Sorting by Witnesses* which requires less comparisons than Quicksort 
 or Timsort on random data.
-This work is a master's thesis von Kirsten K..
+This work is a master's thesis of Kirsten K..
 
 ## Implementation
 * Soft Sequence Heaps
