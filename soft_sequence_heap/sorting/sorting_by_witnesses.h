@@ -69,8 +69,6 @@ template<typename T>
 void sort_selected_intervals(tuple_extract_partially<T> *t_extract) {
     // at the moment it is not possible to parallelize the sorting, because the intervals still overlap.
     for (int i = 0; i < t_extract->intervals.size(); ++i) {
-        // TimSort::timSort(&(t_extract->values[t_extract->intervals[i].first]),
-        //               t_extract->intervals[i].second - t_extract->intervals[i].first);
         std::sort(t_extract->values.begin() + t_extract->intervals[i].first,
                   t_extract->values.begin() + ( t_extract->intervals[i].second - t_extract->intervals[i].first ));
     }
@@ -97,8 +95,6 @@ void sort_selected_intervals_parallel(tuple_extract_partially<T> *t_extract) {
         // we use Timsort to get the number of comparisons
         std::sort(t_extract->values.begin() + distinct_intervals[i].first,
                   t_extract->values.begin() + ( distinct_intervals[i].second - distinct_intervals[i].first ));
-        // TimSort::timSort(&(t_extract->values[distinct_intervals[i].first]),
-        //               distinct_intervals[i].second - distinct_intervals[i].first);
     }
     t_extract->intervals = remaining_intervals;
     sort_selected_intervals_parallel(t_extract);
